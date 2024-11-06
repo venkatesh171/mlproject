@@ -13,7 +13,7 @@ def error_message_detail(error: Exception, error_detail: sys) -> str:
     return error_message
 
 # Custom exception class inheriting from the base Exception class
-class Custom_exception(Exception):
+class CustomException(Exception):
     def __init__(self, error_message: Exception, error_detail: sys):
         # Initialize the base Exception class with the error message
         super().__init__(error_message)
