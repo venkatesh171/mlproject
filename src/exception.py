@@ -1,5 +1,4 @@
 import sys
-import logging
 
 # Function to extract detailed error information
 def error_message_detail(error: Exception, error_detail: sys) -> str:
