@@ -6,8 +6,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 from typing import List
-
 from data_transformation import DataTransforamtion
+from model_trainer import ModelTrainer
+
 @dataclass
 class _DataIngestionConfig:
     train_data_path: str = os.path.join('artifacts', 'train.csv')
@@ -54,4 +55,8 @@ if __name__=="__main__":
 
     transformation = DataTransforamtion()
 
-    transformation.initiate_data_trainsformation(train_path=train_path, test_path=test_path)
+    train_arr, test_arr, _ = transformation.initiate_data_trainsformation(train_path=train_path, test_path=test_path)
+
+    model_trainer = ModelTrainer()
+    score = model_trainer.initiate_model_trainer(train_array=train_arr, test_array=test_arr)
+    print(score)

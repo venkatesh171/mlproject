@@ -5,10 +5,14 @@ import pandas as pd
 from src.exception import CustomException
 import pickle
 from src.logger import logging
+from sklearn.base import BaseEstimator
+from sklearn.metrics import r2_score
+from typing import Dict
 
 
 
-def save_object(file_path, obj):
+
+def save_object(file_path: str, obj) -> None:
     try:
         dir_path = os.path.dirname(file_path)
 
@@ -18,6 +22,33 @@ def save_object(file_path, obj):
             pickle.dump(obj, file_obj)
             logging.info('created the pickle file')
 
+    except Exception as e:
+        logging.error(CustomException(e, sys))
+        raise CustomException(e, sys)
+
+def evaluate_model(
+        X_train: np.ndarray, y_train: np.ndarray, 
+        X_test: np.ndarray, y_test: np.ndarray, 
+        models: Dict[str, BaseEstimator]) -> Dict[str, float]:
+    try:
+        report = {}
+
+        for key, value in models.items():
+            model = value
+            logging.info('fitting the model with train data')
+            model.fit(X_train, y_train)
+            logging.info('model training completed')
+
+            # y_train_pred = model.predict(X_train)
+            y_test_pred = model.predict(X_test)
+
+            # train_model_score = r2_score(y_train, y_train_pred)
+            test_model_score = r2_score(y_test, y_test_pred)
+            logging.info(f'model: {key} r2_score is: {test_model_score}')
+            report[key] = test_model_score
+        logging.info('models evaluation completed')
+        return report
+    
     except Exception as e:
         logging.error(CustomException(e, sys))
         raise CustomException(e, sys)

@@ -65,7 +65,7 @@ class DataTransforamtion:
             logging.error(CustomException(e, sys))
             raise CustomException(e, sys)
     
-    def initiate_data_trainsformation(self, train_path: str, test_path: str) -> List[str]:
+    def initiate_data_trainsformation(self, train_path: str, test_path: str) -> list:
         try:
             train_df = pd.read_csv(train_path)
             test_df = pd.read_csv(test_path)
