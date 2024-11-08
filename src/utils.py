@@ -6,6 +6,7 @@ from src.exception import CustomException
 import pickle
 from src.logger import logging
 from sklearn.base import BaseEstimator
+from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import r2_score
 from typing import Dict
 
@@ -29,13 +30,22 @@ def save_object(file_path: str, obj) -> None:
 def evaluate_model(
         X_train: np.ndarray, y_train: np.ndarray, 
         X_test: np.ndarray, y_test: np.ndarray, 
-        models: Dict[str, BaseEstimator]) -> Dict[str, float]:
+        models: Dict[str, BaseEstimator], params: dict) -> Dict[str, float]:
     try:
         report = {}
 
         for key, value in models.items():
             model = value
+            print(model)
+            param = params[key]
+            print(param)
+            
+            logging.info(f'finding params for model: {key}')
+            gs = GridSearchCV(estimator=model, param_grid=param, n_jobs=-1, cv=3)
+            gs.fit(X_train, y_train)
+
             logging.info('fitting the model with train data')
+            model.set_params(**gs.best_params_)
             model.fit(X_train, y_train)
             logging.info('model training completed')
 

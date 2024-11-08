@@ -1,3 +1,4 @@
+from queue import Full
 import pandas as pd
 import numpy as np
 from dataclasses import dataclass
@@ -17,10 +18,12 @@ from xgboost import XGBRegressor
 from src.exception import CustomException
 from src.logger import logging
 from src.utils import save_object, evaluate_model
+import json
 
 @dataclass
 class ModelTrainerConfig:
     trained_model_file_path = os.path.join('artifacts', 'model.pkl')
+    model_param_json_path = os.path.join('src', 'components', 'params.json')
 
 class ModelTrainer:
     def __init__(self):
@@ -40,15 +43,18 @@ class ModelTrainer:
 
             models = {
                 "Random Forest": RandomForestRegressor(),
-                'Decision Tress': DecisionTreeRegressor(),
-                'Linear Regission': LinearRegression(),
-                'K-Neighbour Classifier': KNeighborsRegressor(),
-                'XGB Regressor': XGBRegressor(),
+                'Decision Tree': DecisionTreeRegressor(),
+                'K-Neighbour Regression': KNeighborsRegressor(),
+                'XGBRegressor': XGBRegressor(),
                 'CatBoosting Regressor': CatBoostRegressor(),
                 'AdaBoost Regressor': AdaBoostRegressor(),
+                'Gradient Boosting': GradientBoostingRegressor(),
+                'Linear Regression': LinearRegression(),
             }
+            with open(self.model_trainer_config.model_param_json_path, 'r') as json_file:
+                params = json.load(json_file)
 
-            model_report: dict = evaluate_model(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test, models=models)
+            model_report: dict = evaluate_model(X_train=X_train, y_train=y_train, X_test=X_test, y_test=y_test, models=models, params=params)
 
             best_model_score = max(sorted(model_report.values()))
             best_model_name = list(model_report.keys())[
